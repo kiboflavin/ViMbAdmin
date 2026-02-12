@@ -138,7 +138,7 @@ class OSS_Auth_DoctrineAdapter implements Zend_Auth_Adapter_Interface
             if( $user['failed_logins'] >= $maxLogin )
             {
                 $result['code'] = Zend_Auth_Result::FAILURE_UNCATEGORIZED;
-                $result['messages'][] = 'Your account has been locked out due to an excessive number of bad login attempts. Please follow the forgotten password link to set a new password.';
+                $result['messages'][] = 'Your account has been locked out due to an excessive number of bad login attempts. Please contact an administrator to unlock your account.';
             }
             else
             {

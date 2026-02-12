@@ -254,93 +254,11 @@ trait OSS_Controller_Trait_Auth
      */
     public function lostPasswordAction()
     {
-        $this->view->form = $form = $this->_getFormLostPassword();
-
-        $form->getElement( 'username' )->setValue( $this->_getParam( 'username', "" ) );
-
-        $this->view->useCaptcha = $useCaptcha = isset( $this->_options['resources']['auth']['oss']['lost_password']['use_captcha'] ) && $this->_options['resources']['auth']['oss']['lost_password']['use_captcha'];
-
-        if( $useCaptcha )
-        {
-            OSS_Form_Captcha::addCaptchaElements( $form );
-            $captcha = new OSS_Captcha_Image( 0, 0 );
-            $this->view->captchaId = $captcha->generate();
-        }
-
-        if( $this->getRequest()->isPost() )
-        {
-            if( $useCaptcha && $this->_getParam( 'requestnewimage', 0 ) )
-            {
-                unset( $_POST['requestnewimage'] );
-                $form->setDefaults( $_POST );
-                $form->getElement( 'captchatext' )->setValue( "" );
-                return;
-            }
-
-            if( $form->isValid( $_POST ) )
-            {
-                if( $useCaptcha && !OSS_Captcha_Image::_isValid( $this->_getParam( 'captchaid' ), $this->_getParam( 'captchatext', '__' ) ) )
-                {
-                    $form->getElement( 'captchatext' )
-                        ->setValue( '' )
-                        ->addError( 'The entered text does not match that of the image' );
-                    return;
-                }
-
-                $user = $this->getD2EM()->getRepository(
-                                $this->getOptions()['resources']['auth']['oss']['entity'] )
-                        ->findOneByUsername( $form->getValue( 'username') );
-
-                if( !$user )
-                {
-                    $this->addMessage(
-                        'If your username was correct, then an email with a key to allow you to change your password below has been sent to you.',
-                        OSS_Message::SUCCESS
-                    );
-                    $this->redirectAndEnsureDie( 'auth/reset-password/un/' . urlencode( $form->getValue( 'username' ) ) );
-                }
-
-                // start by removing expired preferences
-                if( $user->cleanExpiredPreferences() )
-                    $this->getEntityManager()->flush();
-
-                $pwdResetToken = OSS_String::random( 40 );
-
-                try
-                {
-                    $user->addIndexedPreference( 'tokens.password_reset', $pwdResetToken, '=', time() + 2*60*60, 5 );
-                }
-                catch( OSS_Doctrine2_WithPreferences_IndexLimitException $e )
-                {
-                    $this->addMessage(
-                        'The limit of password reset tokens has been reached. Please try again later when the existing ones will expire or contact support.',
-                        OSS_Message::ERROR
-                    );
-                    $this->redirectAndEnsureDie( 'auth/lost-password' );
-                }
-
-                $this->getEntityManager()->flush();
-
-                $this->view->user  = $user;
-                $this->view->token = $pwdResetToken;
-
-                $mailer = $this->getMailer();
-                $mailer->setFrom( $this->getOptions()['identity']['mailer']['email'], $this->getOptions()['identity']['mailer']['name'] );
-                $mailer->addTo( $user->getEmail(), $user->getFormattedName() );
-                $mailer->setSubject( $this->getOptions()['identity']['sitename'] . ' - Password Reset Information' );
-                $this->resolveTemplate( $mailer, 'lost-password' );
-                $mailer->send();
-
-                $this->addMessage(
-                    'If your username was correct, then an email with a key to allow you to change your password below has been sent to you.',
-                    OSS_Message::SUCCESS
-                );
-
-                $this->getLogger()->info( sprintf( _( "%s requested a reset password token" ), $user->getUsername() ) );
-
-                $this->_redirect( 'auth/reset-password/username/' . urlencode( $form->getValue( 'username' ) ) );
-            }
-        }
+        $this->addMessage(
+            'Password recovery is not available. Please contact an administrator to reset your password.',
+            OSS_Message::ERROR
+        );
+        $this->redirectAndEnsureDie( 'auth/login' );
     }
 
     /*
@@ -349,74 +267,11 @@ trait OSS_Controller_Trait_Auth
      */
     public function resetPasswordAction()
     {
-        $this->view->form = $form = $this->_getFormResetPassword();
-        $form->getElement( 'username' )->setValue( $this->_getParam( "username", "" ) );
-
-        if( $this->getRequest()->isPost() && $form->isValid( $_POST ) )
-        {
-            $user = $this->getD2EM()->getRepository( $this->getOptions()['resources']['auth']['oss']['entity'] )
-                ->findOneByUsername( $form->getValue( 'username') );
-
-            if( !$user )
-            {
-                $this->addMessage(
-                    'Invalid username / token combination. Please check your details and try again.',
-                    OSS_Message::SUCCESS
-                );
-            }
-            else
-            {
-                // start by removing expired preferences
-                if( $user->cleanExpiredPreferences() )
-                    $this->getD2EM()->flush();
-
-                if( !is_array( $user->getIndexedPreference( 'tokens.password_reset' ) ) || !in_array( $form->getValue( 'token' ), $user->getIndexedPreference( 'tokens.password_reset' ) ) )
-                {
-                    $this->addMessage(
-                        'Invalid username / token combination. Please check your details and try again.',
-                        OSS_Message::ERROR
-                    );
-                }
-                else
-                {
-                    $user->setPassword( OSS_Auth_Password::hash( $form->getValue( 'password' ), $this->_options['resources']['auth']['oss'] ) );
-                    $user->deletePreference( 'tokens.password_reset' );
-
-                    if( method_exists( $user, 'setFailedLogins' ) )
-                        $user->setFailedLogins( 0 );
-
-                    $this->_deleteRememberMeCookie( $user );
-
-                    if( $this->resetPasswordPreFlush( $user, $form ) )
-                        $this->getD2EM()->flush();
-
-                    $this->clearUserFromCache( $user->getId() );
-
-                    $this->view->user = $user;
-
-                    $mailer = $this->getMailer();
-                    $mailer->setFrom( $this->_options['identity']['mailer']['email'], $this->_options['identity']['mailer']['name'] );
-                    $mailer->addTo( $user->getEmail(), $user->getFormattedName() );
-                    $mailer->setSubject( $this->_options['identity']['sitename'] . ' - Your Password Has Been Reset' );
-                    $this->resolveTemplate( $mailer, 'reset-password' );
-                    $mailer->send();
-
-                    $this->addMessage(
-                        'Your password has been successfully changed. Please log in below with your new password.',
-                        OSS_Message::SUCCESS
-                    );
-
-                    $this->getLogger()->info( sprintf( _( "%s has completed a password reset" ), $user->getUsername() ) );
-
-                    $this->_redirect( 'auth/login' );
-                }
-            }
-        }
-        else
-        {
-            $form->getElement( 'username' )->setValue( $this->_getParam( 'username',    '' ) );
-            $form->getElement( 'token'    )->setValue( $this->_getParam( 'token',       '' ) );
-        }
+        $this->addMessage(
+            'Password recovery is not available. Please contact an administrator to reset your password.',
+            OSS_Message::ERROR
+        );
+        $this->redirectAndEnsureDie( 'auth/login' );
     }
 
     /**
@@ -437,61 +292,11 @@ trait OSS_Controller_Trait_Auth
 
     public function lostUsernameAction()
     {
-        $this->view->form = $form = $this->_getFormLostUsername();
-
-        $this->view->useCaptcha = $useCaptcha = isset( $this->_options['resources']['auth']['oss']['lost_username']['use_captcha'] ) && $this->_options['resources']['auth']['oss']['lost_username']['use_captcha'];
-
-        if( $useCaptcha )
-        {
-            OSS_Form_Captcha::addCaptchaElements( $form );
-            $captcha = new OSS_Captcha_Image( 0, 0 );
-            $this->view->captchaId = $captcha->generate();
-        }
-
-        if( $this->getRequest()->isPost() )
-        {
-            if( $useCaptcha && $this->_getParam( 'requestnewimage', 0 ) )
-            {
-                unset( $_POST['requestnewimage'] );
-                $form->setDefaults( $_POST );
-                $form->getElement( 'captchatext' )->setValue( "" );
-                return;
-            }
-
-            if( $form->isValid( $_POST ) )
-            {
-                if( $useCaptcha && !OSS_Captcha_Image::_isValid( $this->_getParam( 'captchaid' ), $this->_getParam( 'captchatext', '__' ) ) )
-                {
-                    $form->getElement( 'captchatext' )
-                    ->setValue( '' )
-                    ->addError( 'The entered text does not match that of the image' );
-                    return;
-                }
-
-                $this->view->users = $users = $this->getD2EM()->getRepository(
-                                $this->getOptions()['resources']['auth']['oss']['entity'] )
-                        ->findByEmail( $form->getValue( 'email' ) );
-
-                if( count( $users ) )
-                {
-                    $mailer = $this->getMailer();
-                    $mailer->setFrom( $this->_options['identity']['mailer']['email'], $this->_options['identity']['mailer']['name'] );
-                    $mailer->addTo( $form->getValue( 'email' ) );
-                    $mailer->setSubject( $this->_options['identity']['sitename'] . ' - Your Accounts' );
-                    $this->resolveTemplate( $mailer, 'lost-username' );
-                    $mailer->send();
-                }
-
-                $this->addMessage(
-                    'If your email matches user(s) on the system, then an email listing those users has been sent to you.',
-                    OSS_Message::SUCCESS
-                );
-
-                $this->getLogger()->info( sprintf( _( "%s requested lost usernames by email" ), $form->getValue( 'email' ) ) );
-
-                $this->_redirect( 'auth/login' );
-            }
-        }
+        $this->addMessage(
+            'Username recovery is not available. Please contact an administrator for assistance.',
+            OSS_Message::ERROR
+        );
+        $this->redirectAndEnsureDie( 'auth/login' );
     }
 
 
@@ -822,12 +627,10 @@ trait OSS_Controller_Trait_Auth
 
             $this->addMessage(  'Due to an excessive amount of failed logins, '
                 . 'your account has been locked for your own security. '
-                . 'To unlock you account, please follow the <em>Lost Password</em> '
-                . 'procedure below which will guide you through setting a new password '
-                . 'and unlocking your account.', OSS_Message::ERROR
+                . 'Please contact an administrator to unlock your account.', OSS_Message::ERROR
             );
 
-            $this->redirectAndEnsureDie( "auth/lost-password/email/" . urlencode( $username ) );
+            $this->redirectAndEnsureDie( "auth/login" );
         }
         else if( ( !$success || !isset( $_POST['captchatext'] ) ) && $count >= $this->_options['login_security']['failed_logins']['captcha_after'] )
         {
