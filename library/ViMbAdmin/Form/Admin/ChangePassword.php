@@ -58,7 +58,7 @@ class ViMbAdmin_Form_Admin_ChangePassword extends ViMbAdmin_Form
             ->addFilter( 'StripSlashes' );
 
         $password = $this
-            ->createElement( 'password', 'password' )
+            ->createElement( 'text', 'password' )
             ->setLabel( 'New Password' )
             ->setAttrib( 'title', 'New Password' )
             ->setAttrib( 'size', 20)
@@ -68,7 +68,7 @@ class ViMbAdmin_Form_Admin_ChangePassword extends ViMbAdmin_Form
             ->addFilter( 'StripSlashes' );
 
         $confirmPassword = $this
-            ->createElement( 'password', 'confirm_password' )
+            ->createElement( 'text', 'confirm_password' )
             ->setLabel( 'Confirm New Password' )
             ->setAttrib( 'title', 'Confirm New Password' )
             ->setAttrib( 'size', 20)
