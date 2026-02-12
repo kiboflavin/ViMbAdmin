@@ -104,6 +104,11 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
         $confirmNewPassword->getValidator( 'NotEmpty' )
             ->setMessage( _( 'The confirmation password is required and must match the new password' ), Zend_Validate_NotEmpty::IS_EMPTY);
 
+        $passwordGenerator = $this->createElement( 'passwordGenerator', 'new_password_generator' )
+            ->setAttrib( 'target', 'new_password' )
+            ->setAttrib( 'length', 12 )
+            ->setAttrib( 'title', _( 'Generate Random Password' ) );
+
         $cancel = $this->createElement( 'button' , 'cancel' )
             ->setLabel( _( 'Cancel' ) );
 
@@ -113,6 +118,7 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
         $this->addElement( $username )
             ->addElement( $currentPassword )
             ->addElement( $newPassword )
+            ->addElement( $passwordGenerator )
             ->addElement( $confirmNewPassword )
             ->addElement( $cancel )
             ->addElement( $submit );
