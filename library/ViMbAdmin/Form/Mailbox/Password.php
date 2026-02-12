@@ -88,7 +88,10 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
             ->addValidator( 'StringLength', true, array( $this->getMinPasswordLength(), 255 ) )
             ->addFilter( 'StringTrim' )
             ->addFilter( 'HtmlEntitiesDecode' )
-            ->addFilter( 'StripSlashes' );
+            ->addFilter( 'StripSlashes' )
+            ->removeDecorator( 'Label' )
+            ->removeDecorator( 'outerwrapper' )
+            ->removeDecorator( 'innerwrapper' );
 
         $confirmNewPassword = $this->createElement( 'password', 'confirm_new_password' )
             ->setLabel( _( 'Confirm New Password' ) )
