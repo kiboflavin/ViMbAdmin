@@ -104,8 +104,8 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
         $confirmNewPassword->getValidator( 'NotEmpty' )
             ->setMessage( _( 'The confirmation password is required and must match the new password' ), Zend_Validate_NotEmpty::IS_EMPTY);
 
-        $passwordGenerator = $this->createElement( 'passwordGenerator', 'new_password_generator' )
-            ->setAttrib( 'target', 'new_password' )
+        $passwordGenerator = new OSS_Form_Element_PasswordGenerator( 'new_password_generator' );
+        $passwordGenerator->setAttrib( 'target', 'new_password' )
             ->setAttrib( 'length', 12 )
             ->setAttrib( 'title', _( 'Generate Random Password' ) );
 
