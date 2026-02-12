@@ -62,6 +62,7 @@ class ViMbAdmin_Form extends Twitter_Form
         
         $this->addElementPrefixPath( 'OSS_Filter',   'OSS/Filter/',   'filter' );
         $this->addElementPrefixPath( 'OSS_Validate', 'OSS/Validate/', 'validate' );
+        $this->addElementPrefixPath( 'OSS_Form_Element', 'OSS/Form/Element/', 'element' );
                                                                                                                                 
         if( method_exists( $this, 'initialiseTraits' ) )
             $this->initialiseTraits( $options );
