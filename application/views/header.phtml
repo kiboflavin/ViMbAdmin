@@ -39,7 +39,7 @@
 
 <body>
 
-{if !isset($inColorBox) || !$inColorBox}
+{if (!isset($inColorBox) || !$inColorBox) && (!isset($hideNavbar) || !$hideNavbar)}
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
