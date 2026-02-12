@@ -88,10 +88,7 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
             ->addValidator( 'StringLength', true, array( $this->getMinPasswordLength(), 255 ) )
             ->addFilter( 'StringTrim' )
             ->addFilter( 'HtmlEntitiesDecode' )
-            ->addFilter( 'StripSlashes' )
-            ->removeDecorator( 'Label' )
-            ->removeDecorator( 'outerwrapper' )
-            ->removeDecorator( 'innerwrapper' );
+            ->addFilter( 'StripSlashes' );
 
         $confirmNewPassword = $this->createElement( 'password', 'confirm_new_password' )
             ->setLabel( _( 'Confirm New Password' ) )
@@ -125,6 +122,11 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
             ->addElement( $confirmNewPassword )
             ->addElement( $cancel )
             ->addElement( $submit );
+
+        // Remove decorators from new_password since we're handling the label/control-group in the view script
+        $this->getElement( 'new_password' )->removeDecorator( 'Label' )
+            ->removeDecorator( 'outerwrapper' )
+            ->removeDecorator( 'innerwrapper' );
 
     }
 
