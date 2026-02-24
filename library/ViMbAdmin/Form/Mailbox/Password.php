@@ -90,20 +90,6 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
             ->addFilter( 'HtmlEntitiesDecode' )
             ->addFilter( 'StripSlashes' );
 
-        $confirmNewPassword = $this->createElement( 'password', 'confirm_new_password' )
-            ->setLabel( _( 'Confirm New Password' ) )
-            ->setAttrib( 'title', _( 'Confirm New Password' ) )
-            ->setAttrib( 'class', 'required' )
-            ->setRequired( true )
-            ->addValidator( 'NotEmpty', true )
-            ->addValidator( 'OSSIdenticalField', true, array( 'fieldName' => 'new_password', 'fieldTitle' => _( 'the new password' ) ) )
-            ->addFilter( 'StringTrim' )
-            ->addFilter( 'HtmlEntitiesDecode' )
-            ->addFilter( 'StripSlashes' );
-
-        $confirmNewPassword->getValidator( 'NotEmpty' )
-            ->setMessage( _( 'The confirmation password is required and must match the new password' ), Zend_Validate_NotEmpty::IS_EMPTY);
-
         $passwordGenerator = new OSS_Form_Element_PasswordGenerator( 'new_password_generator' );
         $passwordGenerator->setAttrib( 'target', 'new_password' )
             ->setAttrib( 'length', 12 )
@@ -119,7 +105,6 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
             ->addElement( $currentPassword )
             ->addElement( $newPassword )
             ->addElement( $passwordGenerator )
-            ->addElement( $confirmNewPassword )
             ->addElement( $cancel )
             ->addElement( $submit );
 
