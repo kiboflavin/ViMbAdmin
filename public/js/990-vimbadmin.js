@@ -547,15 +547,11 @@ function copyPassword()
         password = $( '#generated_password' ).val();
     }
     
-    var $input = $( '#new_password' );
-    var $newInput = $input.clone( true );
-    
-    $newInput.attr( 'type', 'text' );
-    $newInput.val( password );
-    $newInput.trigger( 'blur' );
-    $newInput.trigger( 'input' );
-    
-    $input.replaceWith( $newInput );
+    navigator.clipboard.writeText( password ).then( function() {
+        alert( 'Password copied to clipboard!' );
+    }, function() {
+        alert( 'Failed to copy password' );
+    });
 }
 
 function togglePasswordVisibility()
