@@ -28,10 +28,10 @@
             <th>Mailboxes</th>
             <th>Aliases</th>
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                <th>Size ({$size_multiplier})</th>
+                <th>Usage ({$size_multiplier})</th>
+                <th>Quota ({$size_multiplier})</th>
             {/if}
             <th width="55">Active</th>
-            <th>Transport</th>
             <th>Backup MX</th>
             <th>Created</th>
             <th width="115"></th>
@@ -51,10 +51,24 @@
                 </td>
                 {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
                     <td>
-                        {if $domain.mailboxes_size}
-                            {($domain.mailboxes_size/$multiplier)|string_format:"%.3f"}
+                        {if $domain.quota_used}
+                            {assign var=quota_used value=($domain.quota_used/$multiplier)|string_format:"%.0f"}
+                            {if $domain.quota_total > 0}
+                                {assign var=quota_pct value=($domain.quota_used/$domain.quota_total*100)|string_format:"%.0f"}
+                            {else}
+                                {assign var=quota_pct value=0}
+                            {/if}
+                            {$quota_used} ({$quota_pct}%)
                         {else}
-                            0
+                            -
+                        {/if}
+                    </td>
+                    <td>
+                        {if $domain.quota_total}
+                            {assign var=quota_total value=($domain.quota_total/$multiplier)|string_format:"%.0f"}
+                            {$quota_total}
+                        {else}
+                            -
                         {/if}
                     </td>
                 {/if}
@@ -62,7 +76,6 @@
                     <div id="throb-toggle-active-{$domain.id}" style="float: right;"></div>
                     <span id="toggle-active-{$domain.id}" onclick="toggleActive( 'toggle-active-{$domain.id}', {$domain.id}, '.', '' );" class="btn btn-mini {if $domain.active}btn-success{else}btn-danger{/if}">{$domain.active|yesno}</span>
                 </td>
-                <td>{$domain.transport}</td>
                 <td>{$domain.backupmx|yesno}</td>
                 <td>{$domain.created->format( 'Y-m-d' )}</td>
                 <td>

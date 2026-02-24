@@ -43,8 +43,8 @@ $(document).ready(function()
             { 'sType': 'num-html' },
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
             { 'sType': 'num-html' },
+            { 'sType': 'num-html' },
             {/if}
-            null,
             null,
             null,
             null,
@@ -109,10 +109,10 @@ function getEntries( event ){
                                     formatMailboxes( row.id, row.mailboxes, row.maxmailboxes ),
                                     formatAliases( row.id, row.aliases, row.maxaliases ),
                                     {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                                    row.mailboxes_size == null ? 0 : (row.mailboxes_size / {$multiplier}).toFixed(1),
+                                    row.quota_used == null ? '-' : (row.quota_used / {$multiplier}).toFixed(0) + ' (' + (row.quota_total > 0 ? (row.quota_used / row.quota_total * 100).toFixed(0) : 0) + '%)',
+                                    row.quota_total == null ? '-' : (row.quota_total / {$multiplier}).toFixed(0),
                                     {/if}
                                     formatActive( row.id, row.active ),
-                                    row.transport,
                                     row.backupmx ? "Yes": "No",
                                     row.created.date.substr( 0, 10 ),
                                     formatControlls( row.id, row.name )
