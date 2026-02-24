@@ -32,7 +32,6 @@
                 <th>Quota ({$size_multiplier})</th>
             {/if}
             <th width="55">Active</th>
-            <th>Backup MX</th>
             <th>Created</th>
             <th width="115"></th>
         </tr>
@@ -76,7 +75,6 @@
                     <div id="throb-toggle-active-{$domain.id}" style="float: right;"></div>
                     <span id="toggle-active-{$domain.id}" onclick="toggleActive( 'toggle-active-{$domain.id}', {$domain.id}, '.', '' );" class="btn btn-mini {if $domain.active}btn-success{else}btn-danger{/if}">{$domain.active|yesno}</span>
                 </td>
-                <td>{$domain.backupmx|yesno}</td>
                 <td>{$domain.created->format( 'Y-m-d' )}</td>
                 <td>
                     <div class="btn-group">

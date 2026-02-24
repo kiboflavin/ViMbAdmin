@@ -47,7 +47,6 @@ $(document).ready(function()
             {/if}
             null,
             null,
-            null,
             { 'bSortable': false, "bSearchable": false }
         ]
     });
@@ -113,7 +112,6 @@ function getEntries( event ){
                                     row.quota_total == null ? '-' : (row.quota_total / {$multiplier}).toFixed(0),
                                     {/if}
                                     formatActive( row.id, row.active ),
-                                    row.backupmx ? "Yes": "No",
                                     row.created.date.substr( 0, 10 ),
                                     formatControlls( row.id, row.name )
                          ]);
