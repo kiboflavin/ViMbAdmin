@@ -548,9 +548,14 @@ function copyPassword()
     }
     
     navigator.clipboard.writeText( password ).then( function() {
-        alert( 'Password copied to clipboard!' );
-    }, function() {
-        alert( 'Failed to copy password' );
+        var $btn = $( '#copy_password_btn' );
+        var originalHtml = $btn.html();
+        $btn.html( '<i class="icon-ok"></i>' );
+        setTimeout( function() {
+            $btn.fadeOut( 500, function() {
+                $btn.html( originalHtml ).fadeIn( 500 );
+            });
+        }, 2000 );
     });
 }
 
