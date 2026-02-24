@@ -558,6 +558,26 @@ function copyPassword()
     $input.replaceWith( $newInput );
 }
 
+function togglePasswordVisibility()
+{
+    var $input = $( '#new_password' );
+    var isPassword = $input.attr( 'type' ) === 'password';
+    
+    var $newInput = $input.clone( true );
+    
+    $newInput.attr( 'type', isPassword ? 'text' : 'password' );
+    $newInput.trigger( 'blur' );
+    
+    $input.replaceWith( $newInput );
+    
+    var $icon = $( '#password_toggle i' );
+    if ( isPassword ) {
+        $icon.removeClass( 'icon-eye-open' ).addClass( 'icon-eye-close' );
+    } else {
+        $icon.removeClass( 'icon-eye-close' ).addClass( 'icon-eye-open' );
+    }
+}
+
 
 //****************************************************************************
 // DataTables http://datatables.net/blog/Twitter_Bootstrap_2
