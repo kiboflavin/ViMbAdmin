@@ -36,8 +36,15 @@
             return { meter: $(), text: $() };
         }
         
-        // Clear the box and add our content
-        $box.empty();
+        // Only clear if meter doesn't exist yet
+        if ($('#' + meterId).length === 0) {
+            $box.find('.password-strength-container').remove();
+        }
+        
+        // Check if meter already exists
+        if ($('#' + meterId).length > 0) {
+            return { meter: $('#' + meterId), text: $('#' + textId) };
+        }
         
         // Create strength meter container
         var $container = $('<div class="password-strength-container"></div>');
