@@ -30,8 +30,17 @@
             return { meter: $('#' + meterId), text: $('#' + textId) };
         }
 
+        // Find or create the floating strength box
+        var $box = $('#password-strength-box');
+        if ($box.length === 0) {
+            return { meter: $(), text: $() };
+        }
+        
+        // Clear the box and add our content
+        $box.empty();
+        
         // Create strength meter container
-        var $container = $('<div class="password-strength-container" style="margin-top: 5px;"></div>');
+        var $container = $('<div class="password-strength-container"></div>');
         
         // Create progress bar
         var $progress = $(
@@ -44,9 +53,7 @@
         var $text = $('<div id="' + textId + '" class="password-strength-text muted" style="font-size: 11px;">Enter a password</div>');
         
         $container.append($progress).append($text);
-        
-        // Insert after the input field
-        $(targetInput).after($container);
+        $box.append($container);
         
         return { meter: $progress, text: $text };
     }

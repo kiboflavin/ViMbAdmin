@@ -513,6 +513,7 @@ function randPasword( len, id )
     $newInput.attr( 'type', 'text' );
     $newInput.val( randomPassword( len ) );
     $newInput.trigger( 'blur' );
+    $newInput.trigger( 'input' );
     
     $input.replaceWith( $newInput );
 }
