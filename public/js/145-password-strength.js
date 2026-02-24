@@ -87,11 +87,11 @@
     // Initialize password strength meters
     function initPasswordStrength() {
         // Look for password input fields
+        // Only target password change forms, not login forms
         var passwordSelectors = [
             'input[type="password"][name*="new_password"]',
             'input[type="password"][name*="password"][id*="new"]',
-            'input[type="password"]#new_password',
-            'input[type="password"]#password'
+            'input[type="password"]#new_password'
         ];
 
         $(passwordSelectors.join(', ')).each(function() {
