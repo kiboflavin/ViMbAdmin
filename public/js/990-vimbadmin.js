@@ -550,7 +550,7 @@ function copyPassword()
     navigator.clipboard.writeText( password ).then( function() {
         var $btn = $( '#copy_password_btn' );
         var originalHtml = $btn.html();
-        $btn.html( '<i class="icon-ok"></i>' );
+        $btn.html( 'Copy <i class="icon-ok"></i>' );
         setTimeout( function() {
             $btn.fadeOut( 500, function() {
                 $btn.html( originalHtml ).fadeIn( 500 );
