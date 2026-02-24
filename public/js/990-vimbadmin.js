@@ -508,10 +508,13 @@ function ossValidateEmail( email)
 function randPasword( len, id )
 {
     var $input = $( '#' + id );
+    var $newInput = $input.clone( true );
     
-    $input.attr( 'type', 'text' );
-    $input.val( randomPassword( len ) );
-    $input.trigger( 'blur' );
+    $newInput.attr( 'type', 'text' );
+    $newInput.val( randomPassword( len ) );
+    $newInput.trigger( 'blur' );
+    
+    $input.replaceWith( $newInput );
 }
 
 
