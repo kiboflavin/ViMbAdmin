@@ -237,9 +237,15 @@ function toggleActive(elid, id) {
     }
 
     {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-    function formatMdirsize( id, maildir_size, homedir_size, size_at, quota )
+    function formatMdirsize( id, maildir_size, homedir_size, size_at, quota, quota_used )
     {
-        if( maildir_size != null ){
+        if( quota_used != null && quota_used > 0 ){
+            var quota_used_mb = quota_used / {$multiplier};
+            var quota_total_mb = quota / {$multiplier};
+            var quota_pct = quota > 0 ? (quota_used / quota * 100).toFixed(0) : 0;
+            return '<a href="#" data-sizes="'+ size_at.date + '|' + homedir_size + '|' + maildir_size + '|{$multiplier}|{$size_multiplier}|' + quota + '|' + quota_used + '" id="dir-size-' + id + '">' + quota_used_mb.toFixed(1) + ' / ' + quota_total_mb.toFixed(1) + ' (' + quota_pct + '%)</a>';
+        }
+        else if( maildir_size != null ){
             if( maildir_size / {$multiplier} < 0.1 )
                 var mdir_size = 0.1;
             else
