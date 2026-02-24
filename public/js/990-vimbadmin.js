@@ -518,6 +518,46 @@ function randPasword( len, id )
     $input.replaceWith( $newInput );
 }
 
+function generatePassword()
+{
+    var genType = $( 'input[name="gen_type"]:checked' ).val();
+    var password;
+    
+    if ( genType === 'passphrase' ) {
+        var words = [ 'apple', 'banana', 'cherry', 'dragon', 'eagle', 'forest', 'guitar', 'heaven', 'island', 'jungle',
+                      'kitchen', 'lemon', 'mountain', 'night', 'ocean', 'piano', 'queen', 'river', 'sunset', 'tiger',
+                      'umbrella', 'violet', 'whisper', 'xylophone', 'yellow', 'zebra', 'cloud', 'dream', 'earth', 'falcon' ];
+        var selected = [];
+        for ( var i = 0; i < 4; i++ ) {
+            selected.push( words[ Math.floor( Math.random() * words.length ) ] );
+        }
+        password = selected.join( '-' );
+    } else {
+        password = randomPassword( 12 );
+    }
+    
+    $( '#generated_password' ).val( password );
+}
+
+function copyPassword()
+{
+    var password = $( '#generated_password' ).val();
+    if ( !password ) {
+        generatePassword();
+        password = $( '#generated_password' ).val();
+    }
+    
+    var $input = $( '#new_password' );
+    var $newInput = $input.clone( true );
+    
+    $newInput.attr( 'type', 'text' );
+    $newInput.val( password );
+    $newInput.trigger( 'blur' );
+    $newInput.trigger( 'input' );
+    
+    $input.replaceWith( $newInput );
+}
+
 
 //****************************************************************************
 // DataTables http://datatables.net/blog/Twitter_Bootstrap_2
