@@ -54,12 +54,17 @@
                 <td>
                     {if $mbox.quota_used}
                         {assign var=quota_used value=($mbox.quota_used/$multiplier)|string_format:"%.0f"}
-                        {$quota_used}
+                        {if $mbox.quota > 0}
+                            {assign var=quota_pct value=($mbox.quota_used/$mbox.quota*100)|string_format:"%.0f"}
+                        {else}
+                            {assign var=quota_pct value=0}
+                        {/if}
+                        {$quota_used} ({$quota_pct}%)
                     {elseif $mbox.maildir_size}
                         {assign var=mdir_size value=($mbox.maildir_size/$multiplier)|string_format:"%.0f"}
                         {$mdir_size}
                     {else}
-                        0
+                        -
                     {/if}
                 </td>
                 <td>
