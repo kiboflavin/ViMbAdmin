@@ -52,6 +52,7 @@ $(document).ready( function() {
             null,
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
             { 'sType': 'num-html' },
+            { 'sType': 'num-html' },
             {/if}
             {if !isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled}
             null,
@@ -128,7 +129,8 @@ function toggleActive(elid, id) {
                                         row.username,
                                         row.name,
                                         {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                                            formatMdirsize( row.id, row.maildir_size, row.homedir_size, row.size_at, row.quota, row.quota_used ),
+                                        formatUsage( row.quota, row.quota_used ),
+                                        formatQuota( row.quota ),
                                         {/if}
                                         row.domain,
                                         formatActive( row.id, row.active ),
@@ -257,6 +259,31 @@ function toggleActive(elid, id) {
         }
         else
             return "0" ;
+    }
+
+    function formatUsage( quota, quota_used )
+    {
+        if( quota_used != null && quota_used > 0 ){
+            var quota_used_mb = quota_used / {$multiplier};
+            var quota_pct = quota > 0 ? (quota_used / quota * 100).toFixed(0) : 0;
+            var color = '';
+            if( quota_pct >= 90 ) color = 'red';
+            else if( quota_pct >= 75 ) color = '#f0ad4e';
+            var style = color ? 'style="color:' + color + '"' : '';
+            return '<span ' + style + '>' + quota_used_mb.toFixed(0) + ' {$size_multiplier} (' + quota_pct + '%)</span>';
+        }
+        else if( quota_used != null ){
+            return quota_used / {$multiplier}.toFixed(0) + ' {$size_multiplier}';
+        }
+        return '-';
+    }
+
+    function formatQuota( quota )
+    {
+        if( quota != null && quota > 0 ){
+            return (quota / {$multiplier}).toFixed(0) + ' {$size_multiplier}';
+        }
+        return '-';
     }
     {/if}
 

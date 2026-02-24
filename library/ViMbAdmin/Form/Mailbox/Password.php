@@ -56,8 +56,8 @@ class ViMbAdmin_Form_Mailbox_Password extends ViMbAdmin_Form
              ->setAttrib( 'name', 'change_password_form' );
 
         $username = $this->createElement( 'text', 'username' )
-            ->setLabel( _( 'Username' ) )
-            ->setAttrib( 'title', _( 'Username' ) )
+            ->setLabel( _( 'Email Address' ) )
+            ->setAttrib( 'title', _( 'Email Address' ) )
             ->setAttrib( 'class', 'required' )
             ->setAttrib( 'autocomplete', 'off' )
             ->setRequired( true )
