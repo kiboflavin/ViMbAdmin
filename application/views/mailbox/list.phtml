@@ -54,7 +54,11 @@
                     {if $mbox.quota_used}
                         {assign var=quota_used value=($mbox.quota_used/$multiplier)|string_format:"%.2f"}
                         {assign var=quota_total value=($mbox.quota/$multiplier)|string_format:"%.2f"}
-                        {assign var=quota_pct value=($mbox.quota > 0) ? ($mbox.quota_used/$mbox.quota*100)|string_format:"%.0f" : 0}
+                        {if $mbox.quota > 0}
+                            {assign var=quota_pct value=($mbox.quota_used/$mbox.quota*100)|string_format:"%.0f"}
+                        {else}
+                            {assign var=quota_pct value=0}
+                        {/if}
                         <a href="#" data-sizes="{$mbox.size_at->format('d/m/Y H:i:s')}|{$mbox.homedir_size}|{$mbox.maildir_size}|{$multiplier}|{$size_multiplier}|{$mbox.quota}|{$mbox.quota_used}" id="dir-size-{$mbox.id}">{$quota_used} / {$quota_total} ({$quota_pct}%)</a>
                     {elseif $mbox.maildir_size}
                         {assign var=mdir_size value=($mbox.maildir_size/$multiplier)|string_format:"%.2f"}

@@ -90,9 +90,11 @@ class Mailbox extends EntityRepository
         
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->select( 'm.id as id, m.username as username, m.name as name, m.active as active, m.maildir_size as maildir_size,
-                    m.homedir_size as homedir_size, m.size_at as size_at, m.quota as quota, d.domain as domain, m.delete_pending' )
+                    m.homedir_size as homedir_size, m.size_at as size_at, m.quota as quota, d.domain as domain, m.delete_pending,
+                    q.bytes as quota_used' )
             ->from( '\\Entities\\Mailbox', 'm' )
             ->join( 'm.Domain', 'd' )
+            ->leftJoin( '\\Entities\\Quota', 'q', 'WITH', 'q.username = m.username' )
             ->where( "m.delete_pending = FALSE AND ( m.username LIKE '{$filter}%' OR m.name LIKE '{$filter}%' OR d.domain LIKE '{$filter}%' )" );
         
         if( !$admin->isSuper() )
