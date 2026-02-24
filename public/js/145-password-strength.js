@@ -70,9 +70,11 @@
         var password = targetInput.value;
         var elements = createStrengthMeter(targetInput);
         
+        // Always show the meter, even when empty
         if (!password) {
-            elements.meter.find('.bar').css('width', '0%');
-            elements.meter.removeClass('progress-danger progress-warning progress-info progress-success');
+            elements.meter.find('.bar').css('width', '10%');
+            elements.meter.removeClass('progress-danger progress-warning progress-info progress-success')
+                          .addClass('progress-danger');
             elements.text.text('Enter a password').addClass('muted').removeClass('text-error text-warning text-info text-success');
             return;
         }
