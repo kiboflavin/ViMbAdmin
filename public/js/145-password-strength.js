@@ -125,10 +125,8 @@
                 updateStrengthMeter(this);
             });
             
-            // Initial check if field has value
-            if (this.value) {
-                updateStrengthMeter(this);
-            }
+            // Always initialize the meter on load
+            updateStrengthMeter(this);
         });
     }
 
