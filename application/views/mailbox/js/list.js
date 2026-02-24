@@ -74,16 +74,19 @@ function toggleActive(elid, id) {
         data = $( event.target ).attr( 'data-sizes' ).split( '|' );
         hdirsize = data[1] / data[3];
         mdirsize = data[2] / data[3];
+        quota_total = data[5] / data[3];
+        quota_used = data[6] ? data[6] / data[3] : null;
         msg =  "<table class=\"table\"><thead>";
         msg += "<tr><th>Last size update:</th><td>" + data[0] + "</td></tr></thead>";
         msg += "<tr><th>Home directory size:</th><td> " + hdirsize.toFixed( 5 ) + data[4] + "</td></tr>";
-        msg += "<tr><th>Mail directory size:</th><td> " + mdirsize.toFixed( 5 ) + data[4];
-        if( data[5] != 0 )
+        msg += "<tr><th>Mail directory size:</th><td> " + mdirsize.toFixed( 5 ) + data[4] + "</td></tr>";
+        if( quota_used != null )
         {
-            prc = 100 / data[5] * data[2];
-            msg += " (" + prc.toFixed(0) + "%)";
+            var quota_pct = data[5] > 0 ? (100 / data[5] * data[6]).toFixed(0) : 0;
+            msg += "<tr><th>Quota used:</th><td> " + quota_used.toFixed( 5 ) + data[4] + " (" + quota_pct + "%)</td></tr>";
         }
-        msg += "</td></tr></table>";
+        msg += "<tr><th>Quota limit:</th><td> " + quota_total.toFixed( 5 ) + data[4] + "</td></tr>";
+        msg += "</table>";
         bootbox.alert( msg );
     }
 {/if}
@@ -125,7 +128,7 @@ function toggleActive(elid, id) {
                                         row.username,
                                         row.name,
                                         {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                                            formatMdirsize( row.id, row.maildir_size, row.homedir_size, row.size_at, row.quota ),
+                                            formatMdirsize( row.id, row.maildir_size, row.homedir_size, row.size_at, row.quota, row.quota_used ),
                                         {/if}
                                         row.domain,
                                         formatActive( row.id, row.active ),

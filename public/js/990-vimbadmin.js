@@ -573,9 +573,9 @@ function togglePasswordVisibility()
     
     var $icon = $( '#password_toggle i' );
     if ( isPassword ) {
-        $icon.removeClass( 'icon-eye-open' ).addClass( 'icon-eye-close' );
-    } else {
         $icon.removeClass( 'icon-eye-close' ).addClass( 'icon-eye-open' );
+    } else {
+        $icon.removeClass( 'icon-eye-open' ).addClass( 'icon-eye-close' );
     }
 }
 
