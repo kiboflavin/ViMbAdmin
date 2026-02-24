@@ -28,8 +28,8 @@
             <th>Mailboxes</th>
             <th>Aliases</th>
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                <th>Usage ({$size_multiplier})</th>
-                <th>Quota ({$size_multiplier})</th>
+                <th>Usage</th>
+                <th>Quota</th>
             {/if}
             <th width="55">Active</th>
             <th>Created</th>
@@ -57,7 +57,14 @@
                             {else}
                                 {assign var=quota_pct value=0}
                             {/if}
-                            {$quota_used} ({$quota_pct}%)
+                            {if $quota_pct >= 90}
+                                {assign var=quota_color value="red"}
+                            {elseif $quota_pct >= 75}
+                                {assign var=quota_color value="#f0ad4e"}
+                            {else}
+                                {assign var=quota_color value=""}
+                            {/if}
+                            <span style="color: {if $quota_color}{$quota_color}{else}inherit{/if}">{$quota_used} {$size_multiplier} ({$quota_pct}%)</span>
                         {else}
                             -
                         {/if}
@@ -65,7 +72,7 @@
                     <td>
                         {if $domain.quota_total}
                             {assign var=quota_total value=($domain.quota_total/$multiplier)|string_format:"%.0f"}
-                            {$quota_total}
+                            {$quota_total} {$size_multiplier}
                         {else}
                             -
                         {/if}

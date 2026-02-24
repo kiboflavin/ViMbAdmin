@@ -108,8 +108,8 @@ function getEntries( event ){
                                     formatMailboxes( row.id, row.mailboxes, row.maxmailboxes ),
                                     formatAliases( row.id, row.aliases, row.maxaliases ),
                                     {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                                    row.quota_used == null ? '-' : (row.quota_used / {$multiplier}).toFixed(0) + ' (' + (row.quota_total > 0 ? (row.quota_used / row.quota_total * 100).toFixed(0) : 0) + '%)',
-                                    row.quota_total == null ? '-' : (row.quota_total / {$multiplier}).toFixed(0),
+                                    row.quota_used == null ? '-' : (row.quota_used / {$multiplier}).toFixed(0) + ' {$size_multiplier} (' + (row.quota_total > 0 ? (row.quota_used / row.quota_total * 100).toFixed(0) : 0) + '%)',
+                                    row.quota_total == null ? '-' : (row.quota_total / {$multiplier}).toFixed(0) + ' {$size_multiplier}',
                                     {/if}
                                     formatActive( row.id, row.active ),
                                     row.created.date.substr( 0, 10 ),

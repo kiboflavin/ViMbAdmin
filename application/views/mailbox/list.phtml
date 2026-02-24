@@ -35,8 +35,8 @@
             <th>Email</th>
             <th>Name</th>
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
-                <th>Usage ({$size_multiplier})</th>
-                <th>Quota ({$size_multiplier})</th>
+                <th>Usage</th>
+                <th>Quota</th>
             {/if}
             {if !isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled}
                 <th>Domain</th>
@@ -59,10 +59,17 @@
                         {else}
                             {assign var=quota_pct value=0}
                         {/if}
-                        {$quota_used} ({$quota_pct}%)
+                        {if $quota_pct >= 90}
+                            {assign var=quota_color value="red"}
+                        {elseif $quota_pct >= 75}
+                            {assign var=quota_color value="#f0ad4e"}
+                        {else}
+                            {assign var=quota_color value=""}
+                        {/if}
+                        <span style="color: {if $quota_color}{$quota_color}{else}inherit{/if}">{$quota_used} {$size_multiplier} ({$quota_pct}%)</span>
                     {elseif $mbox.maildir_size}
                         {assign var=mdir_size value=($mbox.maildir_size/$multiplier)|string_format:"%.0f"}
-                        {$mdir_size}
+                        {$mdir_size} {$size_multiplier}
                     {else}
                         -
                     {/if}
@@ -70,7 +77,7 @@
                 <td>
                     {if $mbox.quota}
                         {assign var=quota_total value=($mbox.quota/$multiplier)|string_format:"%.0f"}
-                        {$quota_total}
+                        {$quota_total} {$size_multiplier}
                     {else}
                         -
                     {/if}
