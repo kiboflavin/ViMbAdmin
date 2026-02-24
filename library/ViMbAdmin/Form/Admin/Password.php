@@ -55,7 +55,7 @@ class ViMbAdmin_Form_Admin_Password extends ViMbAdmin_Form
             ->setAttrib( 'id', 'change_password_form' )
             ->setAttrib( 'name', 'change_password_form' );
 
-        $password = $this->createElement( 'text', 'password' )
+        $password = $this->createElement( 'password', 'new_password' )
             ->setAttrib( 'size', 40 )
             ->setLabel( _( 'Password' ) )
             ->setAttrib( 'title', _( 'Password' ) )

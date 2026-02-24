@@ -789,7 +789,7 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
 
             $this->getMailbox()->setPassword(
                 OSS_Auth_Password::hash(
-                    $form->getValue( 'password' ),
+                    $form->getValue( 'new_password' ),
                     [
                         'pwhash' => $this->_options['defaults']['mailbox']['password_scheme'],
                         'pwsalt' => isset( $this->_options['defaults']['mailbox']['password_salt'] )
@@ -819,7 +819,7 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
                 $mailer->addTo( $this->getMailbox()->getUsername(), $this->getMailbox()->getName() );
 
                 $this->view->admin = $this->getAdmin();
-                $this->view->newPassword = $form->getValue( 'password' );
+                $this->view->newPassword = $form->getValue( 'new_password' );
                 $mailer->setBodyText( $this->view->render( 'mailbox/email/change_password.phtml' ) );
 
                 try
