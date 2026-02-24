@@ -48,11 +48,13 @@ class Mailbox extends EntityRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->select( 'm.id as id, m.username as username, m.name as name, m.active as active, m.maildir_size as maildir_size,
-                    m.homedir_size as homedir_size, m.size_at as size_at, m.quota as quota, d.domain as domain, m.delete_pending' )
+                    m.homedir_size as homedir_size, m.size_at as size_at, m.quota as quota, d.domain as domain, m.delete_pending,
+                    q.bytes as quota_used' )
             ->from( '\\Entities\\Mailbox', 'm' )
             ->where( 'm.delete_pending = FALSE' )
-            ->join( 'm.Domain', 'd' );
-        
+            ->join( 'm.Domain', 'd' )
+            ->leftJoin( '\\Entities\\Quota', 'q', 'WITH', 'q.username = m.username' );
+
         if( !$admin->isSuper() )
             $qb->join( 'd.Admins', 'd2a' )
                 ->andWhere( 'd2a = ?1' )
@@ -62,7 +64,7 @@ class Mailbox extends EntityRepository
             $qb->andWhere( 'm.Domain = ?2' )
                 ->setParameter( 2, $domain );
 
-        return $qb->getQuery()->getArrayResult();  
+        return $qb->getQuery()->getArrayResult();
     }
     
     /**
