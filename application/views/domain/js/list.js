@@ -1,23 +1,6 @@
 var delDialog;
 var oDataTable;
 
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
-    "data-sort-asc": function ( a, b ) {
-        var aAttr = $(a).attr('data-sort');
-        var bAttr = $(b).attr('data-sort');
-        var aVal = aAttr ? parseInt(aAttr) : 0;
-        var bVal = bAttr ? parseInt(bAttr) : 0;
-        return aVal - bVal;
-    },
-    "data-sort-desc": function ( a, b ) {
-        var aAttr = $(a).attr('data-sort');
-        var bAttr = $(b).attr('data-sort');
-        var aVal = aAttr ? parseInt(aAttr) : 0;
-        var bVal = bAttr ? parseInt(bAttr) : 0;
-        return bVal - aVal;
-    }
-});
-
 $(document).ready(function()
 {
     oDataTable = $('#list_table').dataTable({
@@ -55,8 +38,18 @@ $(document).ready(function()
         "sPaginationType": "bootstrap",
         'aoColumns': [
             null,
-            { 'sType': 'data-sort' },
-            { 'sType': 'data-sort' },
+            { 
+                'sType': 'html',
+                'render': function(data, type, row) {
+                    return type === 'sort' ? $(data).data('sort') : data;
+                }
+            },
+            { 
+                'sType': 'html',
+                'render': function(data, type, row) {
+                    return type === 'sort' ? $(data).data('sort') : data;
+                }
+            },
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
             { 'sType': 'num-html' },
             { 'sType': 'num-html' },
