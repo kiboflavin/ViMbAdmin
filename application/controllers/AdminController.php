@@ -233,6 +233,10 @@ class AdminController extends ViMbAdmin_Controller_Action
                 )
             );
 
+            error_log( "DEBUG ADMIN: password = " . $form->getValue( 'password' ) );
+            error_log( "DEBUG ADMIN: auth oss options = " . print_r( $this->_options['resources']['auth']['oss'], true ) );
+            error_log( "DEBUG ADMIN: new hash = " . $this->getTargetAdmin()->getPassword() );
+
             if( !$self )
             {
                 $this->log(
