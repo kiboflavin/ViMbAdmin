@@ -118,20 +118,23 @@ class AuthController extends ViMbAdmin_Controller_Action
                         )
                     )
                 {
-                    $mailbox->setPassword(
-                         OSS_Auth_Password::hash(
-                            $form->getValue( 'new_password' ),
-                            [ 
-                                'pwhash' => $this->_options['defaults']['mailbox']['password_scheme'],
-                                'pwsalt' => isset( $this->_options['defaults']['mailbox']['password_salt'] )
-                                                ? $this->_options['defaults']['mailbox']['password_salt'] : null, 
-                                'pwdovecot' => isset( $this->_options['defaults']['mailbox']['dovecot_pw_binary'] )
-                                                ? $this->_options['defaults']['mailbox']['dovecot_pw_binary'] : null,
-                                 'username' => $form->getValue( 'username' )
+                    $newPassword = $form->getValue( 'new_password' );
+                    $hashOptions = [ 
+                        'pwhash' => $this->_options['defaults']['mailbox']['password_scheme'],
+                        'pwsalt' => isset( $this->_options['defaults']['mailbox']['password_salt'] )
+                                        ? $this->_options['defaults']['mailbox']['password_salt'] : null, 
+                        'pwdovecot' => isset( $this->_options['defaults']['mailbox']['dovecot_pw_binary'] )
+                                        ? $this->_options['defaults']['mailbox']['dovecot_pw_binary'] : null,
+                        'username' => $form->getValue( 'username' )
+                    ];
+                    $newHash = OSS_Auth_Password::hash( $newPassword, $hashOptions );
 
-                            ]
-                        )
-                    );
+                    error_log( "DEBUG: new_password = " . $newPassword );
+                    error_log( "DEBUG: password_scheme = " . $hashOptions['pwhash'] );
+                    error_log( "DEBUG: newHash = " . $newHash );
+                    error_log( "DEBUG: old hash = " . $mailbox->getPassword() );
+
+                    $mailbox->setPassword( $newHash );
 
                     $this->getD2EM()->flush();
                     $this->addMessage( _( 'You have successfully changed your password.' ), OSS_Message::SUCCESS );
