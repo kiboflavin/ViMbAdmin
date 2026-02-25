@@ -42,11 +42,11 @@
                 <td>{$domain.name}</td>
                 <td>
                     <a class="btn btn-mini have-tooltip" id="add_mailbox_{$domain.id}" title="Add Mailbox" href="{genUrl controller='mailbox' action='add' did=$domain.id}"><i class="icon-plus"></i></a>&nbsp;&nbsp;
-                    <a class="ul" href="{genUrl controller='mailbox' action='list' did=$domain.id}">{$domain.mailboxes}{if $domain.maxmailboxes}/{$domain.maxmailboxes}{/if}</a>
+                    <a class="ul" href="{genUrl controller='mailbox' action='list' did=$domain.id}" data-sort="{$domain.mailboxes}">{$domain.mailboxes}{if $domain.maxmailboxes}/{$domain.maxmailboxes}{/if}</a>
                 </td>
                 <td>
                     <a class="btn btn-mini have-tooltip" id="add_alias_{$domain.id}" title="Add Alias" href="{genUrl controller='alias' action='add' did=$domain.id}"><i class="icon-plus"></i></a>&nbsp;&nbsp;
-                    <a class="ul" href="{genUrl controller='alias' action='list' did=$domain.id}">{$domain.aliases}{if $domain.maxaliases}/{$domain.maxaliases}{/if}</a>
+                    <a class="ul" href="{genUrl controller='alias' action='list' did=$domain.id}" data-sort="{$domain.aliases}">{$domain.aliases}{if $domain.maxaliases}/{$domain.maxaliases}{/if}</a>
                 </td>
                 {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
                     <td>
