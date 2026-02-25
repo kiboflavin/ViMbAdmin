@@ -228,12 +228,12 @@ class AdminController extends ViMbAdmin_Controller_Action
 
             $this->getTargetAdmin()->setPassword( 
                 OSS_Auth_Password::hash(
-                    $form->getValue( 'password'),
+                    $form->getValue( 'new_password'),
                     $this->_options['resources']['auth']['oss']
                 )
             );
 
-            error_log( "DEBUG ADMIN: password = " . $form->getValue( 'password' ) );
+            error_log( "DEBUG ADMIN: new_password = " . $form->getValue( 'new_password' ) );
             error_log( "DEBUG ADMIN: auth oss options = " . print_r( $this->_options['resources']['auth']['oss'], true ) );
             error_log( "DEBUG ADMIN: new hash = " . $this->getTargetAdmin()->getPassword() );
 
