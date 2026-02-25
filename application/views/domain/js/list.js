@@ -40,14 +40,22 @@ $(document).ready(function()
             null,
             { 
                 'sType': 'html',
-                'render': function(data, type, row) {
-                    return type === 'sort' ? $(data).data('sort') : data;
+                'render': function(data, type) {
+                    if (type === 'sort') {
+                        var match = $(data).attr('data-sort-value');
+                        return match ? parseInt(match) : 0;
+                    }
+                    return data;
                 }
             },
             { 
                 'sType': 'html',
-                'render': function(data, type, row) {
-                    return type === 'sort' ? $(data).data('sort') : data;
+                'render': function(data, type) {
+                    if (type === 'sort') {
+                        var match = $(data).attr('data-sort-value');
+                        return match ? parseInt(match) : 0;
+                    }
+                    return data;
                 }
             },
             {if isset($options.defaults.list_size.disabled) && !$options.defaults.list_size.disabled}
@@ -154,7 +162,7 @@ function formatMailboxes( id, mailboxes, maxmailboxes )
     var str = '<a class="btn btn-mini have-tooltip" id="add_mailbox_' + id + '" title="Add Mailbox" href="{genUrl controller="mailbox" action="add"}/did/' + id + '">\
         <i class="icon-plus"></i>\
     </a>&nbsp;&nbsp;\
-    <a class="ul" href="{genUrl controller="mailbox" action="list"}/did/' + id + '" data-sort="' + mailboxes + '">' + mailboxes;
+    <a class="ul" href="{genUrl controller="mailbox" action="list"}/did/' + id + '" data-sort-value="' + mailboxes + '">' + mailboxes;
     if( maxmailboxes != 0 )
        str += '/' +maxmailboxes
     str += '</a>';
@@ -166,7 +174,7 @@ function formatAliases( id, aliases, maxaliases )
     var str = '<a class="btn btn-mini have-tooltip" id="add_alias_' + id + '" title="Add Alias" href="{genUrl controller="alias" action="add"}/did/' + id + '">\
         <i class="icon-plus"></i>\
     </a>&nbsp;&nbsp;\
-    <a class="ul" href="{genUrl controller="aliases" action="list"}/did/' + id + '" data-sort="' + aliases + '">' + aliases;
+    <a class="ul" href="{genUrl controller="aliases" action="list"}/did/' + id + '" data-sort-value="' + aliases + '">' + aliases;
     if( maxaliases != 0 )
        str += '/' + maxaliases;
     str += '</a>';
