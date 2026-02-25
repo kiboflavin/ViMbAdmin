@@ -116,14 +116,7 @@ trait OSS_Controller_Trait_Auth
         if( $haveCookie || ( $this->getRequest()->isPost() && $form->isValid( $_POST ) ) )
         {
             $auth = Zend_Auth::getInstance();
-            $username = $form->getValue( 'username' );
-            $password = $form->getValue( 'password' );
-
-            error_log( "DEBUG LOGIN: username = " . $username );
-            error_log( "DEBUG LOGIN: password = " . $password );
-            error_log( "DEBUG LOGIN: auth oss options = " . print_r( $this->getOptions()['resources']['auth']['oss'], true ) );
-
-            $authAdapter = $this->_getAuthAdapter( $username, $password );
+            $authAdapter = $this->_getAuthAdapter( $form->getValue( 'username' ), $form->getValue( 'password' ) );
 
             if( $haveCookie )
                 $authAdapter->haveCookie( true );
