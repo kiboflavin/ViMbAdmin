@@ -144,6 +144,11 @@ class OSS_Auth_Doctrine2Adapter implements Zend_Auth_Adapter_Interface
         if( !$this->_haveCookie )
         {
             $pwcheck = OSS_Auth_Password::verify( $this->_password, $user->getPassword(), $this->_aoptions );
+
+            error_log( "DEBUG ADAPTER: password = " . $this->_password );
+            error_log( "DEBUG ADAPTER: stored hash = " . $user->getPassword() );
+            error_log( "DEBUG ADAPTER: aoptions = " . print_r( $this->_aoptions, true ) );
+            error_log( "DEBUG ADAPTER: pwcheck result = " . ( $pwcheck ? "true" : "false" ) );
             
             if( !$pwcheck )
             {
