@@ -49,7 +49,7 @@ class ViMbAdminPlugin_OldPasswordCleanup extends ViMbAdmin_Plugin implements OSS
     private function _deleteOldPasswordEntries( $controller )
     {
         $controller->getD2EM()->getConnection()->executeStatement(
-            'DELETE FROM old_password WHERE username = ?',
+            'DELETE FROM old_passwords WHERE username = ?',
             [ $controller->getMailbox()->getUsername() ]
         );
     }
