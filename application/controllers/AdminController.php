@@ -250,7 +250,7 @@ class AdminController extends ViMbAdmin_Controller_Action
                 $mailer->setFrom( $this->_options['server']['email']['address'], $this->_options['server']['email']['name'] );
                 $mailer->addTo( $this->getTargetAdmin()->getUsername() );
 
-                $this->view->newPassword = $form->getValue( 'password' );
+                $this->view->newPassword = $form->getValue( $self ? 'password' : 'new_password' );
                 $mailer->setBodyText( $this->view->render( 'admin/email/change_password.phtml' ) );
 
                 try
