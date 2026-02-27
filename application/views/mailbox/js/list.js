@@ -54,7 +54,7 @@ $(document).ready( function() {
             { 'sType': 'num-html' },
             { 'sType': 'num-html' },
             {/if}
-            {if !isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled}
+            {if (!isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled) && !isset($domain)}
             null,
             {/if}
             { "bSearchable": false },
@@ -132,7 +132,9 @@ function toggleActive(elid, id) {
                                         formatUsage( row.quota, row.quota_used ),
                                         formatQuota( row.quota ),
                                         {/if}
+                                        {if (!isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled) && !isset($domain)}
                                         row.domain,
+                                        {/if}
                                         formatActive( row.id, row.active ),
                                         formatControlls( row.id )
                              ]);
