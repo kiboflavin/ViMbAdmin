@@ -38,7 +38,7 @@
                 <th>Usage</th>
                 <th>Quota</th>
             {/if}
-            {if !isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled}
+            {if (!isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled) && !isset($domain)}
                 <th>Domain</th>
             {/if}
             <th width="55">Active</th>
@@ -83,7 +83,7 @@
                     {/if}
                 </td>
             {/if}
-            {if !isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled}
+            {if (!isset($options.defaults.list_domain.disabled) || !$options.defaults.list_domain.disabled) && !isset($domain)}
                 <td>{$mbox.domain}</td>
             {/if}
             <td>
