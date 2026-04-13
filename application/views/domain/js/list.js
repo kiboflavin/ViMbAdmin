@@ -71,6 +71,7 @@ $(document).ready(function()
     // Quick Search Autocomplete
     $( '#quick-search' ).autocomplete({
         source: function( request, response ) {
+            console.log('Quick search request:', request.term);
             $.ajax({
                 url: '{genUrl controller="quick-search" action="search"}',
                 dataType: 'json',
@@ -78,9 +79,12 @@ $(document).ready(function()
                     q: request.term
                 },
                 success: function( data ) {
+                    console.log('Quick search response:', data);
                     response( data );
                 },
-                error: function() {
+                error: function( jqXHR, textStatus, errorThrown ) {
+                    console.log('Quick search error:', textStatus, errorThrown);
+                    console.log('Response:', jqXHR.responseText);
                     response( [] );
                 }
             });
