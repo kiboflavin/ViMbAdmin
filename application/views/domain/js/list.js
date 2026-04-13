@@ -68,6 +68,63 @@ $(document).ready(function()
         ]
     });
 
+    // Quick Search Autocomplete
+    $( '#quick-search' ).autocomplete({
+        source: function( request, response ) {
+            $.ajax({
+                url: '{genUrl controller="quick-search" action="search"}',
+                dataType: 'json',
+                data: {
+                    q: request.term
+                },
+                success: function( data ) {
+                    response( data );
+                },
+                error: function() {
+                    response( [] );
+                }
+            });
+        },
+        minLength: 2,
+        select: function( event, ui ) {
+            if( ui.item.type === 'mailbox' ) {
+                window.location.href = '{genUrl controller="mailbox" action="edit"}/mid/' + ui.item.id;
+            } else if( ui.item.type === 'alias' ) {
+                window.location.href = '{genUrl controller="alias" action="edit"}/alid/' + ui.item.id;
+            }
+            return false;
+        },
+        focus: function( event, ui ) {
+            $( '#quick-search' ).val( ui.item.value );
+            return false;
+        }
+    }).autocomplete( 'instance' )._renderItem = function( ul, item ) {
+        var icon = item.type === 'mailbox' ? 'icon-envelope' : 'icon-share-alt';
+        return $( '<li>' )
+            .append( '<a><i class="' + icon + '"></i> ' + item.label + ' <span class="muted">(' + item.type + ')</span></a>' )
+            .appendTo( ul );
+    };
+
+    // Quick search form submission
+    $( '#quick-search-form' ).on( 'submit', function( e ) {
+        e.preventDefault();
+        var query = $( '#quick-search' ).val();
+        if( query.length >= 2 ) {
+            // If Enter is pressed with a valid selection, trigger select
+            var selected = $( '#quick-search' ).autocomplete( 'instance' ).selectedItem;
+            if( selected ) {
+                if( selected.type === 'mailbox' ) {
+                    window.location.href = '{genUrl controller="mailbox" action="edit"}/mid/' + selected.id;
+                } else if( selected.type === 'alias' ) {
+                    window.location.href = '{genUrl controller="alias" action="edit"}/alid/' + selected.id;
+                }
+            } else {
+                // Show autocomplete dropdown
+                $( '#quick-search' ).autocomplete( 'search', query );
+            }
+        }
+    });
+
 }); // document onready
 
 function toggleActive( elid, id) {
