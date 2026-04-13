@@ -9,6 +9,14 @@
 class QuickSearchController extends ViMbAdmin_Controller_Action
 {
     /**
+     * Ensure user is logged in.
+     */
+    public function preDispatch()
+    {
+        $this->authorise();
+    }
+
+    /**
      * Quick search autocomplete endpoint.
      *
      * Searches mailboxes and aliases by email/address.
