@@ -255,4 +255,92 @@ class Mailbox extends EntityRepository
             ->getResult();  
     }
 
+    /**
+     * Search for mailboxes and aliases by email/address for quick search autocomplete.
+     *
+     * Returns an array with mailboxes and aliases matching the search term,
+     * formatted for autocomplete display.
+     *
+     * @param string           $search The search term
+     * @param \Entities\Admin $admin  The admin for filtering
+     * @param int              $limit  Maximum results to return
+     * @return array Array of results with label, value (username/address), and type (mailbox/alias)
+     */
+    public function searchForQuickSearch( $search, $admin, $limit = 15 )
+    {
+        $search = str_replace( "'", "", $search );
+        $filter = $search . '%';
+
+        $results = [];
+
+        // Search mailboxes
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select( 'm.id, m.username, m.name, d.domain as domain' )
+            ->from( '\\Entities\\Mailbox', 'm' )
+            ->join( 'm.Domain', 'd' )
+            ->where( 'm.delete_pending = FALSE AND ( m.username LIKE :filter OR m.name LIKE :filter )' )
+            ->setParameter( 'filter', $filter )
+            ->setMaxResults( $limit );
+
+        if( !$admin->isSuper() )
+            $qb->join( 'd.Admins', 'd2a' )
+                ->andWhere( 'd2a = :admin' )
+                ->setParameter( 'admin', $admin );
+
+        $mailboxes = $qb->getQuery()->getArrayResult();
+
+        foreach( $mailboxes as $m )
+        {
+            $results[] = [
+                'label' => $m['username'] . ( $m['name'] ? ' (' . $m['name'] . ')' : '' ),
+                'value' => $m['username'],
+                'type'  => 'mailbox',
+                'id'    => $m['id']
+            ];
+        }
+
+        // Search aliases (only those not matching mailbox addresses, i.e. actual aliases)
+        $aliasRepo = $this->getEntityManager()->getRepository( '\\Entities\\Alias' );
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select( 'a.id, a.address, d.domain as domain' )
+            ->from( '\\Entities\\Alias', 'a' )
+            ->join( 'a.Domain', 'd' )
+            ->where( 'a.address LIKE :filter' )
+            ->andWhere( 'a.address != a.goto' ) // Only actual aliases, not mailbox self-refs
+            ->setParameter( 'filter', $filter )
+            ->setMaxResults( $limit );
+
+        if( !$admin->isSuper() )
+            $qb->join( 'd.Admins', 'd2a' )
+                ->andWhere( 'd2a = :admin' )
+                ->setParameter( 'admin', $admin );
+
+        $aliases = $qb->getQuery()->getArrayResult();
+
+        foreach( $aliases as $a )
+        {
+            // Only add if we don't already have this exact address from mailboxes
+            $exists = false;
+            foreach( $results as $r )
+            {
+                if( $r['value'] == $a['address'] )
+                {
+                    $exists = true;
+                    break;
+                }
+            }
+            if( !$exists )
+            {
+                $results[] = [
+                    'label' => $a['address'],
+                    'value' => $a['address'],
+                    'type'  => 'alias',
+                    'id'    => $a['id']
+                ];
+            }
+        }
+
+        return $results;
+    }
+
 }
