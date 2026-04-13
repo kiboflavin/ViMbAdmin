@@ -27,9 +27,14 @@ class QuickSearchController extends ViMbAdmin_Controller_Action
     {
         Zend_Controller_Action_HelperBroker::removeHelper( 'viewRenderer' );
 
-        $query = $this->_getParam('q', '');
+        error_log("QuickSearch: ALL PARAMS = " . print_r($_GET, true));
+        error_log("QuickSearch: ALL REQUEST = " . print_r($_REQUEST, true));
 
-        error_log("QuickSearch: query='$query'");
+        $query = $this->_getParam('q', '');
+        $query2 = isset($_GET['q']) ? $_GET['q'] : 'NOT SET';
+
+        error_log("QuickSearch: query='$query' (via _getParam)");
+        error_log("QuickSearch: query='$query2' (via _GET)");
 
         if (strlen($query) < 2) {
             echo json_encode([]);

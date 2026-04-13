@@ -71,17 +71,19 @@ $(document).ready(function()
     // Quick Search Autocomplete
     $( '#quick-search' ).autocomplete({
         source: function( request, response ) {
-            console.log('Quick search - request object:', JSON.stringify(request));
-            console.log('Quick search - input val:', $(this).element.val());
             var term = request.term;
             console.log('Quick search - term:', term);
-            console.log('Quick search - full request:', request);
+            console.log('Quick search - URL:', '{genUrl controller="quick-search" action="search"}');
             $.ajax({
                 url: '{genUrl controller="quick-search" action="search"}',
                 type: 'GET',
                 dataType: 'json',
                 data: {
                     q: term
+                },
+                beforeSend: function(xhr) {
+                    console.log('beforeSend - URL:', this.url);
+                    console.log('beforeSend - data:', this.data);
                 },
                 success: function( data ) {
                     console.log('Quick search response:', data);
