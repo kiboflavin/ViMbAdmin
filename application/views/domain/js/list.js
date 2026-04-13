@@ -71,21 +71,15 @@ $(document).ready(function()
     // Quick Search Autocomplete
     $( '#quick-search' ).autocomplete({
         source: function( request, response ) {
-            var term = request.term;
-            console.log('Quick search - term:', term);
-            // Use URL format that Zend expects: /controller/action/q/value
             var url = '{genUrl controller="quick-search" action="search"}';
             $.ajax({
-                url: url + '/q/' + encodeURIComponent(term),
+                url: url + '/q/' + encodeURIComponent(request.term),
                 type: 'GET',
                 dataType: 'json',
                 success: function( data ) {
-                    console.log('Quick search response:', data);
                     response( data );
                 },
-                error: function( jqXHR, textStatus, errorThrown ) {
-                    console.log('Quick search error:', textStatus, errorThrown);
-                    console.log('Response:', jqXHR.responseText);
+                error: function() {
                     response( [] );
                 }
             });
