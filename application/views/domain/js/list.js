@@ -73,18 +73,12 @@ $(document).ready(function()
         source: function( request, response ) {
             var term = request.term;
             console.log('Quick search - term:', term);
-            console.log('Quick search - URL:', '{genUrl controller="quick-search" action="search"}');
+            // Use URL format that Zend expects: /controller/action/q/value
+            var url = '{genUrl controller="quick-search" action="search"}';
             $.ajax({
-                url: '{genUrl controller="quick-search" action="search"}',
+                url: url + '/q/' + encodeURIComponent(term),
                 type: 'GET',
                 dataType: 'json',
-                data: {
-                    q: term
-                },
-                beforeSend: function(xhr) {
-                    console.log('beforeSend - URL:', this.url);
-                    console.log('beforeSend - data:', this.data);
-                },
                 success: function( data ) {
                     console.log('Quick search response:', data);
                     response( data );
