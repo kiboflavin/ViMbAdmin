@@ -71,12 +71,17 @@ $(document).ready(function()
     // Quick Search Autocomplete
     $( '#quick-search' ).autocomplete({
         source: function( request, response ) {
-            console.log('Quick search request:', request.term);
+            console.log('Quick search - request object:', JSON.stringify(request));
+            console.log('Quick search - input val:', $(this).element.val());
+            var term = request.term;
+            console.log('Quick search - term:', term);
+            console.log('Quick search - full request:', request);
             $.ajax({
                 url: '{genUrl controller="quick-search" action="search"}',
+                type: 'GET',
                 dataType: 'json',
                 data: {
-                    q: request.term
+                    q: term
                 },
                 success: function( data ) {
                     console.log('Quick search response:', data);
