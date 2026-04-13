@@ -29,15 +29,22 @@ class QuickSearchController extends ViMbAdmin_Controller_Action
 
         $query = $this->_getParam('q', '');
 
+        error_log("QuickSearch: query='$query'");
+
         if (strlen($query) < 2) {
             echo json_encode([]);
             return;
         }
 
         $admin = $this->getAdmin();
+        error_log("QuickSearch: admin=" . ($admin ? $admin->getUsername() : 'null'));
+
         $results = $this->getD2EM()
             ->getRepository('\\Entities\\Mailbox')
             ->searchForQuickSearch($query, $admin);
+
+        error_log("QuickSearch: results count=" . count($results));
+        error_log("QuickSearch: results=" . json_encode($results));
 
         echo json_encode($results);
     }
