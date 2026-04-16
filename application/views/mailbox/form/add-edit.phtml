@@ -159,10 +159,155 @@
                         {$sf}
                     {/if}
                 {/foreach}
-        
-            </div>
+                
+                {* Password tab - only shown in edit mode *}
+                {if $isEdit && isset($passwordForm)}
+                <div class="tab-pane fade" id="tab_password">
+                    <h4>Change Password</h4>
+                    
+                    <form action="{genUrl controller='mailbox' action='password' mid=$mailbox->getId()}"
+                          method="post"
+                          id="password_form"
+                          name="password_form"
+                          class="form-horizontal">
+                        
+                        <div class="control-group">
+                            <label for="new_password" class="control-label required">New Password</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input type="password" 
+                                           id="new_password" 
+                                           name="new_password" 
+                                           class="required" 
+                                           autocomplete="off"
+                                           size="40"
+                                           title="Password" />
+                                    <span id="password_rand" onclick="generateRandomPassword();" title="Random Password" class="btn add-on" style="margin-left: -5px; cursor: pointer;">
+                                        <i class="icon-refresh"></i>
+                                    </span>
+                                </div>
+                                <p id="help-new_password" class="help-block"></p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; display: flex; gap: 15px;">
+                            <div id="password-strength-box" style="flex: 1; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">
+                                <strong style="font-size: 11px; display: block; margin-bottom: 5px;">Password Strength</strong>
+                                <div class="progress" style="margin-bottom: 0;">
+                                    <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div id="password-generator-box" style="flex: 1; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">
+                                <strong style="font-size: 11px; display: block; margin-bottom: 5px;">Generate Password</strong>
+                                <input type="text" id="generated_password" class="input-medium" style="width: 90%; margin-bottom: 5px;" placeholder="Generated password">
+                                <button type="button" class="btn btn-mini" onclick="generatePassword();" style="margin-right: 5px;">Generate</button>
+                                <button type="button" id="copy_password_btn" class="btn btn-mini" onclick="copyPassword();">Copy</button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group" style="margin-top: 15px;">
+                            <label class="control-label">Email Notification</label>
+                            <div class="controls">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="email" value="1" /> 
+                                    Send new password to {$mailbox->getUsername()}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <fieldset class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="icon-ok icon-white"></i> Change Password
+                            </button>
+                        </fieldset>
+                    </form>
+                    
+                    <script type="text/javascript">
+                        addPluginTab( 'Password', 'tab_password' );
+                        
+                        function generateRandomPassword() {
+                            var length = 12;
+                            var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+                            var password = '';
+                            for (var i = 0; i < length; i++) {
+                                password += chars.charAt(Math.floor(Math.random() * chars.length));
+                            }
+                            $('#new_password').val(password);
+                            $('#generated_password').val(password);
+                            updatePasswordStrength(password);
+                        }
+                        
+                        function updatePasswordStrength(password) {
+                            var strength = 0;
+                            var bar = $('#password-strength-bar');
+                            
+                            if (password.length >= 8) strength += 25;
+                            if (password.length >= 12) strength += 25;
+                            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+                            if (/[0-9]/.test(password) || /[!@#$%^&*]/.test(password)) strength += 25;
+                            
+                            bar.css('width', strength + '%');
+                            bar.removeClass('progress-bar-danger progress-bar-warning progress-bar-success');
+                            
+                            if (strength < 50) {
+                                bar.addClass('progress-bar-danger');
+                            } else if (strength < 75) {
+                                bar.addClass('progress-bar-warning');
+                            } else {
+                                bar.addClass('progress-bar-success');
+                            }
+                        }
+                        
+                        function generatePassword() {
+                            generateRandomPassword();
+                        }
+                        
+                        function copyPassword() {
+                            var copyText = document.getElementById('generated_password');
+                            copyText.select();
+                            document.execCommand('copy');
+                            alert('Password copied to clipboard!');
+                        }
+                        
+                        $(document).ready(function() {
+                            $('#new_password').on('input', function() {
+                                updatePasswordStrength($(this).val());
+                            });
+                            
+                            $('#password_form').on('submit', function(e) {
+                                e.preventDefault();
+                                var form = $(this);
+                                var btn = form.find('button[type=submit]');
+                                btn.prop('disabled', true).html('<i class="icon-loading"></i> Processing...');
+                                
+                                $.ajax({
+                                    url: form.attr('action'),
+                                    type: 'POST',
+                                    data: form.serialize(),
+                                    success: function(response) {
+                                        if (response.success) {
+                                            OSS.message.show(response.message, 'success');
+                                            form[0].reset();
+                                            $('#password-strength-bar').css('width', '0%');
+                                        } else {
+                                            OSS.message.show(response.message || 'An error occurred', 'error');
+                                        }
+                                    },
+                                    error: function() {
+                                        OSS.message.show('An error occurred. Please try again.', 'error');
+                                    },
+                                    complete: function() {
+                                        btn.prop('disabled', false).html('<i class="icon-ok icon-white"></i> Change Password');
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+                </div>
+            {/if}
             
         </div>
+        </div> <!-- end tab-content and tabbable -->
         
         <fieldset class="form-actions">
             <a class="btn" type="button" href="{genUrl controller='mailbox' action='list'}">Cancel</a>

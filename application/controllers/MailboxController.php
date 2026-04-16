@@ -238,6 +238,12 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
 
             $form = $this->getMailboxForm();
             $form->assignEntityToForm( $this->getMailbox(), $this, $this->isEdit() );
+            
+            // Create a simple password form for the password tab
+            $passwordForm = new ViMbAdmin_Form_Admin_Password();
+            if( isset( $this->_options['defaults']['mailbox']['min_password_length'] ) )
+                $passwordForm->setMinPasswordLength( $this->_options['defaults']['mailbox']['min_password_length'] );
+            $this->view->passwordForm = $passwordForm;
         }
 
         $this->view->quota_multiplier = $form->getFilterFileSizeMultiplier();
@@ -783,13 +789,30 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
         if( isset( $this->_options['defaults']['mailbox']['min_password_length'] ) )
             $form->setMinPasswordLength( $this->_options['defaults']['mailbox']['min_password_length'] );
 
-        if( $this->getRequest()->isPost() && $form->isValid( $_POST ) )
+        // Handle AJAX requests from the tab
+        $isAjax = $this->getRequest()->isXmlHttpRequest();
+        $newPassword = $this->getParam( 'new_password', '' );
+        $sendEmail = $this->getParam( 'email', false );
+        
+        if( $this->getRequest()->isPost() )
         {
+            // Validate password is provided
+            if( empty( $newPassword ) )
+            {
+                if( $isAjax )
+                {
+                    echo json_encode([ 'success' => false, 'message' => 'Password is required.' ]);
+                    return;
+                }
+                $this->addMessage( _( 'Password is required.' ), OSS_Message::ERROR );
+                return;
+            }
+            
             $this->notify( 'mailbox', 'password', 'postValidation', $this );
 
             $this->getMailbox()->setPassword(
                 OSS_Auth_Password::hash(
-                    $form->getValue( 'new_password' ),
+                    $newPassword,
                     [
                         'pwhash' => $this->_options['defaults']['mailbox']['password_scheme'],
                         'pwsalt' => isset( $this->_options['defaults']['mailbox']['password_salt'] )
@@ -806,12 +829,11 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
                 "{$this->getAdmin()->getFormattedName()} changed password for mailbox {$this->getMailbox()->getUsername()}"
             );
 
-
             $this->notify( 'mailbox', 'password', 'preFlush', $this );
             $this->getD2EM()->flush();
             $this->notify( 'mailbox', 'password', 'postFlush', $this, [ 'options' => $this->_options ] );
 
-            if( $form->getValue( 'email' ) )
+            if( $sendEmail )
             {
                 $mailer = $this->getMailer();
                 $mailer->setSubject( _( 'New Password for ' . $this->getMailbox()->getUsername() ) );
@@ -819,7 +841,7 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
                 $mailer->addTo( $this->getMailbox()->getUsername(), $this->getMailbox()->getName() );
 
                 $this->view->admin = $this->getAdmin();
-                $this->view->newPassword = $form->getValue( 'new_password' );
+                $this->view->newPassword = $newPassword;
                 $mailer->setBodyText( $this->view->render( 'mailbox/email/change_password.phtml' ) );
 
                 try
@@ -829,13 +851,23 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
                 catch( Zend_Mail_Exception $vException )
                 {
                     $this->getLogger()->debug( $vException->getTraceAsString() );
-                    $this->addMessage( _( 'Could not send email.' ), OSS_Message::ALERT );
-                    $this->_redirect( 'mailbox/list' );
                 }
             }
 
+            if( $isAjax )
+            {
+                echo json_encode([ 'success' => true, 'message' => 'Password has been successfully changed.' ]);
+                return;
+            }
+            
             $this->addMessage( _( "Password has been sucessfully changed." ), OSS_Message::SUCCESS );
             $this->_redirect( 'mailbox/list' );
+        }
+        else if( $isAjax )
+        {
+            // AJAX request without POST - return error
+            echo json_encode([ 'success' => false, 'message' => 'Invalid request.' ]);
+            return;
         }
     }
 
