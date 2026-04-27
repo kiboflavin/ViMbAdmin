@@ -152,6 +152,11 @@
                         </div>
                     </div>
                 </div>
+                
+                <fieldset class="form-actions">
+                    <a class="btn" type="button" href="{genUrl controller='mailbox' action='list'}">Cancel</a>
+                    <input class="btn btn-primary" type="submit" id="{$element->save->getId()}" value="{$element->save->getLabel()}" />
+                </fieldset>
        
                 {* any plugin elements? *}
                 {foreach $element->getSubForms() as $name => $sf}
@@ -298,11 +303,6 @@
             
         </div>
         </div> <!-- end tab-content and tabbable -->
-        
-        <fieldset class="form-actions">
-            <a class="btn" type="button" href="{genUrl controller='mailbox' action='list'}">Cancel</a>
-            <input class="btn btn-primary" type="submit" id="{$element->save->getId()}" value="{$element->save->getLabel()}" />
-        </field>
     </form>
 
     <script type="text/javascript">
