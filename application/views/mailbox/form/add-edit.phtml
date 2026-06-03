@@ -297,7 +297,7 @@
                 </div>
             {/if}
             
-            <fieldset class="form-actions">
+            <fieldset class="form-actions" id="main_form_actions">
                 <a class="btn" type="button" href="{genUrl controller='mailbox' action='list'}">Cancel</a>
                 <input class="btn btn-primary" type="submit" id="{$element->save->getId()}" value="{$element->save->getLabel()}" />
             </fieldset>
@@ -315,6 +315,16 @@
 
             $('#welcome_email').bind( 'change', function() {
                 $('#div_welcome_email').toggle('slow');
+            });
+            
+            // Hide the main Cancel/Save buttons when the Password tab is active
+            $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( e ) {
+                var target = $( e.target ).attr( 'href' );
+                if( target == '#tab_password' ) {
+                    $( '#main_form_actions' ).hide();
+                } else {
+                    $( '#main_form_actions' ).show();
+                }
             });
         }); // document onready
     </script>
