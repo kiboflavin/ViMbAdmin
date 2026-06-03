@@ -801,6 +801,7 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
             {
                 if( $isAjax )
                 {
+                    $this->_helper->viewRenderer->setNoRender( true );
                     echo json_encode([ 'success' => false, 'message' => 'Password is required.' ]);
                     return;
                 }
@@ -856,6 +857,7 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
 
             if( $isAjax )
             {
+                $this->_helper->viewRenderer->setNoRender( true );
                 echo json_encode([ 'success' => true, 'message' => 'Password has been successfully changed.' ]);
                 return;
             }
@@ -866,6 +868,7 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
         else if( $isAjax )
         {
             // AJAX request without POST - return error
+            $this->_helper->viewRenderer->setNoRender( true );
             echo json_encode([ 'success' => false, 'message' => 'Invalid request.' ]);
             return;
         }
