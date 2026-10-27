@@ -244,6 +244,9 @@ class MailboxController extends ViMbAdmin_Controller_PluginAction
             if( isset( $this->_options['defaults']['mailbox']['min_password_length'] ) )
                 $passwordForm->setMinPasswordLength( $this->_options['defaults']['mailbox']['min_password_length'] );
             $this->view->passwordForm = $passwordForm;
+
+            // account history for the logs tab
+            $this->view->mailboxLogs = $this->getD2EM()->getRepository( "\\Entities\\Log" )->loadForMailbox( $this->getMailbox() );
         }
 
         $this->view->quota_multiplier = $form->getFilterFileSizeMultiplier();

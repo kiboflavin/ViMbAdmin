@@ -38,4 +38,30 @@ class Log extends EntityRepository
 
         return $qb->getQuery()->getArrayResult();  
     }
+
+    /**
+     * Load the log entries of a single mailbox, newest first.
+     *
+     * There is no mailbox foreign key on the log table, so entries are matched on
+     * the mailbox's address in the message text (the address is unique per domain).
+     *
+     * @param \Entities\Mailbox $mailbox The mailbox to load the history for.
+     * @param int $limit Maximum number of entries to return.
+     * @return array
+     */
+    public function loadForMailbox( $mailbox, $limit = 200 )
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select( 'l.action as action, l.data as data, l.timestamp as timestamp, a.username as admin' )
+            ->from( '\\Entities\\Log', 'l' )
+            ->leftJoin( 'l.Admin', 'a' )
+            ->where( 'l.data LIKE ?1' )
+            ->orderBy( 'l.timestamp', 'DESC' )
+            ->setMaxResults( $limit )
+            // shortcut: no index on log.data, so this is a scan of the log table, which is
+            // fine at current volumes; add a mailbox_id column to log if it ever gets big.
+            ->setParameter( 1, '%' . $mailbox->getUsername() . '%' );
+
+        return $qb->getQuery()->getArrayResult();
+    }
 }

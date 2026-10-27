@@ -160,6 +160,69 @@
                     {/if}
                 {/foreach}
                 
+                {* Logs tab - only shown in edit mode *}
+                {if $isEdit && isset($mailboxLogs)}
+                {assign var=pw_changed value=false}
+                {foreach $mailboxLogs as $log_entry}
+                    {if $log_entry.action == 'MAILBOX_PW_CHANGE' && !$pw_changed}
+                        {assign var=pw_changed value=$log_entry.timestamp}
+                    {/if}
+                {/foreach}
+                <div class="tab-pane fade" id="tab_logs">
+                    <h4>Account History</h4>
+
+                    <div class="row-fluid" style="margin-bottom: 15px;">
+                        <div class="span4">
+                            <div style="padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">
+                                <strong style="font-size: 11px; display: block; margin-bottom: 5px;">Account Created</strong>
+                                {if $mailbox->getCreated()}{$mailbox->getCreated()->format( 'Y-m-d H:i:s' )}{else}Unknown{/if}
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div style="padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">
+                                <strong style="font-size: 11px; display: block; margin-bottom: 5px;">Last Password Change</strong>
+                                {if $pw_changed}{$pw_changed->format( 'Y-m-d H:i:s' )}{else}Not recorded{/if}
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div style="padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">
+                                <strong style="font-size: 11px; display: block; margin-bottom: 5px;">Last Modified</strong>
+                                {if $mailbox->getModified()}{$mailbox->getModified()->format( 'Y-m-d H:i:s' )}{else}Never{/if}
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>Admin</th>
+                                <th>When</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $mailboxLogs as $log_entry}
+                            <tr>
+                                <td>{$log_entry.action}</td>
+                                <td>{$log_entry.data}</td>
+                                <td>{$log_entry.admin}</td>
+                                <td>{$log_entry.timestamp->format( 'Y-m-d H:i:s' )}</td>
+                            </tr>
+                            {foreachelse}
+                            <tr>
+                                <td colspan="4">No activity recorded for this mailbox.</td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+
+                    <script type="text/javascript">
+                        addPluginTab( 'Logs', 'tab_logs' );
+                    </script>
+                </div>
+                {/if}
+
                 {* Password tab - only shown in edit mode *}
                 {if $isEdit && isset($passwordForm)}
                 <div class="tab-pane fade" id="tab_password">
@@ -317,10 +380,10 @@
                 $('#div_welcome_email').toggle('slow');
             });
             
-            // Hide the main Cancel/Save buttons when the Password tab is active
+            // Hide the main Cancel/Save buttons on the read-only / self-handling tabs
             $( 'a[data-toggle="tab"]' ).on( 'shown.bs.tab', function( e ) {
                 var target = $( e.target ).attr( 'href' );
-                if( target == '#tab_password' ) {
+                if( target == '#tab_password' || target == '#tab_logs' ) {
                     $( '#main_form_actions' ).hide();
                 } else {
                     $( '#main_form_actions' ).show();
