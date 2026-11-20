@@ -211,7 +211,14 @@ class OSS_Auth_Password
         }
 
         if( substr( $hash, 0, 6) == 'crypt:' )
-            return crypt( $pwplain, $pwhash ) == $pwhash;
+        {
+            // PostfixAdmin-era rows store the hash with a {CRYPT} prefix (Dovecot needs it there, PHP
+            // cannot use it as a crypt() salt and returns "*0"), so strip it before comparing
+            if( strncasecmp( $pwhash, '{crypt}', 7 ) === 0 )
+                $pwhash = substr( $pwhash, 7 );
+
+            return crypt( $pwplain, $pwhash ) === $pwhash;
+        }
 
         if( substr( $hash, 0, 8 ) == 'dovecot:' )
             return ViMbAdmin_Dovecot::passwordVerify( substr( $hash, 8 ), $pwhash, $pwplain, $config['username'] );
